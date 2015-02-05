@@ -8,5 +8,6 @@ description 'UNKNOWN'
 project_page 'UNKNOWN'
 
 ## Add dependencies, if any:
-# dependency 'username/name', '>= 1.2.0'
 dependency 'henk52/bootserver', '>= 0.1.0'
+dependency 'razorsedge/network', '>= 3.2.0'
+dependency 'henk52/nfsserver', '>=0.1.0'

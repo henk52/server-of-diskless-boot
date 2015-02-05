@@ -38,6 +38,7 @@
 class server-of-diskless-boot (
   $szNetworkInterfaceName = hiera( 'NetworkInterfaceName', '' ),
   $szServiceIpAddress = hiera( 'ServiceIpAddress', '172.16.1.3' ),
+  $szServiceNetworkAddress = hiera( 'ServiceIpAddress', '172.16.1' ),
 ){
 
   #if $szNetworkInterfaceName not set then set it
@@ -56,5 +57,13 @@ class server-of-diskless-boot (
     ensure    => 'up',
     ipaddress => "$szServiceIpAddress",
     netmask   => '255.255.255.0',
+#    before => Class [ 'bootserver' ],
+  }
+
+  class { 'bootserver':
+    szIpAddressForSupportingKickStart => $szServiceIpAddress,
+    szNetworkAddress => $szServiceNetworkAddress,
+    szWebProcessOwnerName => 'nobody',
+    require => Class [ 'network' ],
   }
 }
