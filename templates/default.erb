@@ -2,7 +2,13 @@ default disklessboot
 
 label disklessboot
   kernel fedora20_x86_64/vmlinuz
-  append initrd=fedora20_x86_64/initrd.img root=nfs:172.16.1.3:/exported/disklessimages/fedora20_x86_64 rw
+  append initrd=fedora20_x86_64/initrd.img netboot=nfs root=/dev/nfs nfsroot=172.16.1.3:/exported/disklessimages/fedora20_x86_64
+#  append initrd=fedora20_x86_64/initrd.img root=nfs:172.16.1.3:/exported/disklessimages/fedora20_x86_64 rw
+#  APPEND netboot=nfs root=/dev/nfs nfsroot=192.168.1.10:/srv/install/Fedora initrd=Fedora/initrd0.img
+
+#label disklessboot
+#  kernel fedora20_x86_64/vmlinuz
+#  append initrd=fedora20_x86_64/initrd.img root=nfs:172.16.1.3:/exported/disklessimages/fedora20_x86_64 rw
 
 #label disklessboot
 #  kernel vmlinuz-3.16.7-200.fc20.x86_64
