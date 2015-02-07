@@ -1,12 +1,20 @@
 
 # yum groupinstall Base --installroot=/exported/root/directory
 
+$szServiceIpAddress = hiera( 'ServiceIpAddress', '172.16.1.3' )
+
 $szDisklessImagesBasePath = '/exported/disklessimages'
 $szFedoraReleaseVersion = '20'
 
+$szOsName = 'fedora20_x86_64'
+
+$szInitRamFS = 'initramfs-3.16.7-200.fc20.x86_64.img'
+$szVmLinuz   = 'vmlinuz-3.16.7-200.fc20.x86_64'
+
 file { '/exported': ensure => directory }
 file { "$szDisklessImagesBasePath": ensure => directory, require => File [ '/exported' ] }
-file { "$szDisklessImagesBasePath/fedora20_x86_64": ensure => directory, require => File [ "$szDisklessImagesBasePath" ], }
+file { "$szDisklessImagesBasePath/$szOsName": ensure => directory, require => File [ "$szDisklessImagesBasePath" ], }
+
 
 # add the following two lines to /etc/yum.conf
 # Setting to install every package from a group
@@ -32,3 +40,29 @@ class { 'nfsserver':
    hohNfsExports => $hNfsExports,
 }
 
+$szTftpBasePath = '/var/tftp'
+
+file { "$szTftpBasePath/$szOsName":
+  ensure => directory,
+  owner  => nobody,
+}
+
+file { "$szTftpBasePath/$szOsName/initrd.img":
+  ensure => present,
+  source => "$szDisklessImagesBasePath/$szOsName/boot/$szInitRamFS",
+  owner  => nobody,
+  require => File [ "$szTftpBasePath/$szOsName", "$szDisklessImagesBasePath/$szOsName" ],
+}
+
+file { "$szTftpBasePath/$szOsName/vmlinuz":
+  ensure => present,
+  source => "$szDisklessImagesBasePath/$szOsName/boot/$szVmLinuz",
+  owner  => nobody,
+  require => File [ "$szTftpBasePath/$szOsName", "$szDisklessImagesBasePath/$szOsName" ],
+}
+
+file { "$szTftpBasePath/pxelinux.cfg/default":
+  ensure  => file,
+  backup  => false,
+  content => template('server-of-diskless-boot/default.erb'),
+}
